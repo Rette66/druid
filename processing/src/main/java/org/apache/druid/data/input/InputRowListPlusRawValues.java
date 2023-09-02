@@ -26,6 +26,7 @@ import org.apache.druid.utils.CollectionUtils;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -125,10 +126,26 @@ public class InputRowListPlusRawValues
   /**
    * This method is left here only for test cases
    */
+  Comparator<Map<String, Object>> mapKeyComparator = (map1, map2) -> {
+    // Convert the keys of both maps to a list for comparison
+    List<String> keys1 = new ArrayList<>(map1.keySet());
+    List<String> keys2 = new ArrayList<>(map2.keySet());
+
+    // Sort the key lists alphabetically
+    Collections.sort(keys1);
+    Collections.sort(keys2);
+
+    // Compare the sorted key lists
+    return keys1.toString().compareTo(keys2.toString());
+  };\
+
   @Nullable
   public Map<String, Object> getRawValues()
   {
+    Collections.sort(rawValues, mapKeyComparator);
     return CollectionUtils.isNullOrEmpty(rawValues) ? null : Iterables.getOnlyElement(rawValues);
+    
+
   }
 
   public List<Map<String, Object>> getRawValuesList()
